@@ -1,0 +1,29 @@
+@Configuration
+@EnableWebSecurity
+public class KerberosConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/get-data").authenticated()
+                .and()
+                .httpBasic()
+                .and()
+                .addFilterBefore(
+                        kerberosAuthenticationFilter(authenticationManagerBean()),
+                        BasicAuthenticationFilter.class);
+    }
+
+    @Bean
+    public KerberosAuthenticationProvider kerberosAuthenticationProvider() {
+        SunJaasKerberosClient client = new SunJaasKerberosClient();
+        client.setDebug(true);
+        return new KerberosAuthenticationProvider(client);
+    }
+
+    @Bean
+    public KerberosAuthenticationFilter kerberosAuthenticationFilter(AuthenticationManager authenticationManager) {
+        KerberosAuthenticationFilter filter = new KerberosAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManager);
+        return filter;
+    }
+}

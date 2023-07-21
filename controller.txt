@@ -1,0 +1,10 @@
+@RestController
+public class FooController {
+    @Autowired
+    private FooService fooService;
+
+    @GetMapping("/get-data")
+    public String getData() {
+        return fooService.getFooData();
+    }
+}
